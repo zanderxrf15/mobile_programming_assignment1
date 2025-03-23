@@ -1,6 +1,8 @@
 # mobile_programming_assignment1
 
-the codes submitted here is a clone from the following Github repository
+The codes submitted here is a clone from the following Github repository
 https://github.com/duyhuy27/Flutter-Sqflite-Example-CRUD
 
-the codes from the cloned repository can be found on the master branch
+The codes from the cloned repository can be found on the master branch
+
+Attached is a video link showing the application running on my emulator.
