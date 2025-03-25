@@ -6,4 +6,4 @@ https://github.com/duyhuy27/Flutter-Sqflite-Example-CRUD
 
 Attached is a video link showing the application running on my emulator.
 
-https://drive.google.com/file/d/1yroiXQROgGb8U7RRksKsQJMxQdMwLyBy/view?usp=sharing
+https://drive.google.com/file/d/1huoBs8vj5ptTMeM8RSE1idVDSZJdjScK/view?usp=sharing
