@@ -17,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late List<Patient> patients;
+  List<String> notes = [];
 
   @override
   void initState() {
@@ -28,6 +29,49 @@ class _HomeScreenState extends State<HomeScreen> {
     DatabaseHelper dbHelper = DatabaseHelper.instance;
     patients = await dbHelper.getAllPatients();
     setState(() {}); // Refresh the UI after loading patients
+  }
+
+  void showNoteDialog({int? index}) {
+    TextEditingController noteController = TextEditingController(
+        text: index != null ? notes[index] : "");
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(index == null ? 'Note' : 'Edit Note'),
+          content: TextField(
+            controller: noteController,
+            decoration: const InputDecoration(hintText: 'Enter your note'),
+            maxLines: 3,
+          ),
+          actions: <Widget>[
+            if (index != null)
+              TextButton(
+                child: const Text('Delete'),
+                onPressed: () {
+                  setState(() {
+                    notes.removeAt(index);
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+            TextButton(
+              child: const Text('Save'),
+              onPressed: () {
+                setState(() {
+                  if (index == null) {
+                    notes.add(noteController.text);
+                  } else {
+                    notes[index] = noteController.text;
+                  }
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -55,25 +99,21 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               title: const Text('Trang chủ'),
               onTap: () {
-                // Handle "Home" tap
                 Navigator.pop(context);
               },
             ),
             ListTile(
               title: const Text('Quản lý bệnh nhân'),
               onTap: () {
-                // Handle "Quản lý bệnh nhân" tap
-                // You can navigate to the corresponding screen or perform any action
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ManagerPatients()),
-                ); // Close the drawer
+                );
               },
             ),
             ListTile(
               title: const Text('Quản lý bệnh án'),
               onTap: () {
-                // Handle "Quản lý bệnh án" tap
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ManagerRecord()),
@@ -83,7 +123,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               title: const Text('Cài đặt'),
               onTap: () {
-                // Handle "Cài đặt" tap
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SettingScreen()),
@@ -93,32 +132,55 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               title: const Text('Đăng xuất'),
               onTap: () {
-                // Handle "Đăng xuất" tap
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => LoginScreen()),
                 );
-                // Implement logout logic, navigate to the login screen, etc.
               },
             ),
           ],
         ),
       ),
-      body: patients.isNotEmpty
-          ? ListView.builder(
+      body: Column(
+        children: [
+          if (notes.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: notes.asMap().entries.map((entry) {
+                  int idx = entry.key;
+                  String note = entry.value;
+                  return Card(
+                    child: ListTile(
+                      title: Text(note),
+                      onTap: () => showNoteDialog(index: idx),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          Expanded(
+            child: patients.isNotEmpty
+                ? ListView.builder(
               itemCount: patients.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(patients[index].name),
                   subtitle: Text(
                       'Age: ${patients[index].age}, Gender: ${patients[index].gender}'),
-                  // Add more patient details as needed
                 );
               },
             )
-          : Center(
+                : Center(
               child: Text('No patients available'),
             ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showNoteDialog(),
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
